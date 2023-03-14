@@ -1,0 +1,63 @@
+name: CI
+
+on: pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  COMMIT_COUNT: 1
+
+jobs:
+  lint-commits:
+    name: Lint commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Count
+        run: |
+          LIMIT=${{ env.COMMIT_COUNT }}
+          COUNT=$(git rev-list --count ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }})
+          if [ $COUNT -gt $LIMIT ]; then
+            echo "Commit count must not greater than $LIMIT. Found $COUNT commits."
+            exit 1
+          fi
+
+      - name: Format
+        run: pnpm commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+  lint-type:
+    name: Type checking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Run typescript check
+        run: pnpm lint:type
+
+  lint-code:
+    name: Code checking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Run eslint
+        run: pnpm lint:code
+
+  lint-build:
+    name: Build Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Build Library
+        run: pnpm bundle

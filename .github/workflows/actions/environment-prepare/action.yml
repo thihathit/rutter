@@ -1,0 +1,25 @@
+name: 'Prepare environment'
+description: 'Setup Node.js with pnpm & Module Installation'
+
+inputs:
+  install-modules:
+    description: Install node_modules
+    default: true
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: pnpm/action-setup@v2
+
+    - uses: actions/setup-node@v3
+      with:
+        registry-url: 'https://registry.npmjs.org'
+        node-version-file: '.node-version'
+        check-latest: true
+        cache: 'pnpm'
+        cache-dependency-path: '**/pnpm-lock.yaml'
+
+    - name: Install modules
+      if: ${{ inputs.install-modules }}
+      shell: bash
+      run: pnpm i --frozen-lockfile

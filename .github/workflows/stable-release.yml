@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Semantic release
+        id: release
         uses: cycjimmy/semantic-release-action@v3
         with:
           semantic_version: 18
@@ -21,3 +22,21 @@ jobs:
             conventional-changelog-conventionalcommits
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare to publish
+        if: steps.release.outputs.new_release_published == 'true'
+        uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Bundle
+        if: steps.release.outputs.new_release_published == 'true'
+        run: pnpm bundle
+
+      - name: Build Package Info
+        if: steps.release.outputs.new_release_published == 'true'
+        run: pnpm dlx tsx --tsconfig ./tsconfig.json ./scripts/build-package-info.ts version=${{ steps.release.outputs.new_release_git_tag }}
+
+      - name: Register
+        if: steps.release.outputs.new_release_published == 'true'
+        run: cd ./dist && pnpm publish --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_ACCESS_TOKEN}}

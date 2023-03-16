@@ -4,7 +4,7 @@
     "type": "git",
     "url": "https://github.com/thihathit/rutter.git"
   },
-  "version": "0.1.0",
+  "version": "0.1.1-rc.0",
   "type": "module",
   "packageManager": "pnpm@7.26.0",
   "engines": {

@@ -1,0 +1,15 @@
+name: Stable release
+
+on:
+  push:
+    tags:
+    - v*.*.*-rc.*
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create changelog
+        run: echo "success"

@@ -1,0 +1,9 @@
+{
+  "dryRun": false,
+  "plugins": [
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/github",
+    "@semantic-release/git"
+  ],
+  "preset": "conventionalcommits"
+}

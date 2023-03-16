@@ -1,0 +1,27 @@
+name: Stable release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Semantic release
+        uses: cycjimmy/semantic-release-action@v3
+        with:
+          semantic_version: 18
+          extra_plugins: |
+            @semantic-release/release-notes-generator
+            @semantic-release/github
+            @semantic-release/git
+            conventional-changelog-conventionalcommits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

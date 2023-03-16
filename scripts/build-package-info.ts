@@ -1,14 +1,11 @@
 import { resolve } from 'node:path'
 import { argv } from 'node:process'
-import { writeFile, readFile, copyFile } from 'node:fs/promises'
+import { writeFile, readFile } from 'node:fs/promises'
 
 import { z } from 'zod'
 import { trimStart } from 'lodash-es'
 
-const sourceReadme = resolve('README.md')
-const finalReadme = resolve('dist', 'README.md')
 const sourcePkg = resolve('package.json')
-const finalPkg = resolve('dist', 'package.json')
 
 const node_args = argv.slice(2)
 const node_options = node_args.reduce((opt, arg) => {
@@ -31,13 +28,8 @@ if (options.success == false) {
 } else {
   const { version } = options.data
 
-  await Promise.all([
-    copyFile(sourcePkg, finalPkg),
-    copyFile(sourceReadme, finalReadme)
-  ])
-
   const pkg = JSON.parse(
-    await readFile(finalPkg, {
+    await readFile(sourcePkg, {
       encoding: 'utf-8'
     })
   )
@@ -48,5 +40,5 @@ if (options.success == false) {
   // Remove scripts
   delete pkg.scripts
 
-  await writeFile(finalPkg, JSON.stringify(pkg, null, 2))
+  await writeFile(sourcePkg, JSON.stringify(pkg, null, 2))
 }

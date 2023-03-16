@@ -10,6 +10,8 @@ export const App: FC = () => {
       <nav>
         <button onClick={() => redirect('index')}>Index</button>
 
+        <button onClick={() => redirect('about')}>About</button>
+
         <button onClick={() => redirect('blog')}>Blog</button>
 
         <a href="/invalid-url">

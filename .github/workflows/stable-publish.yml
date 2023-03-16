@@ -3,7 +3,9 @@ name: Stable Publish
 on:
   push:
     tags:
-      - !v*.*.*-rc.*
+      - v*
+    tags-ignore:
+      - v*.*.*-rc.*
 
 jobs:
   release:

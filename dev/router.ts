@@ -2,7 +2,7 @@ import { CreateHistory } from '$core'
 import { useEffect, useState } from 'react'
 
 /**
- * Note: you cannot destructure/re-export `router` instance directly.
+ * Note: you cannot destructure/re-export `router` instance's methods directly.
  *
  * Unless you re-bind `router` instance to the function.
  */

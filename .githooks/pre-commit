@@ -1,0 +1,5 @@
+source $(dirname $0)/node-processor.sh
+
+pnpm lint:code
+pnpm lint:type
+pnpm format

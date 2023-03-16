@@ -1,3 +1,10 @@
+### [0.1.1](https://github.com/thihathit/rutter/compare/v0.1.1-rc.0...v0.1.1) (2023-03-16)
+
+
+### Bug Fixes
+
+* abc ([e837af4](https://github.com/thihathit/rutter/commit/e837af47b0f34b89514ed6a4c5edb6a6207f9059))
+
 ### [0.1.1-rc.0](https://github.com/thihathit/rutter/compare/v0.1.0...v0.1.1-rc.0) (2023-03-16)
 
 

@@ -1,9 +1,9 @@
-name: Stable release
+name: Pre Publish
 
 on:
   push:
     tags:
-    - v*.*.*-rc.*
+      - v*.*.*-rc.*
 
 jobs:
   release:

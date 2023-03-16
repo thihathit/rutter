@@ -16,11 +16,16 @@ import {
 type Options<RN extends RouteName> = {
   /** Register your routes here. */
   routes: Data<RN>
+
+  /** Replace with ponyfill. */
+  URLPattern?: unknown
 }
 
 const getCurrentURL = () => new URL(self.location.toString())
 
 export class CreateHistory<RN extends RouteName> {
+  private Pattern = URLPattern
+
   private url = signal(getCurrentURL())
 
   /** `Reactive` */
@@ -34,7 +39,7 @@ export class CreateHistory<RN extends RouteName> {
         pathname,
         search,
         hash,
-        pattern: new URLPattern({
+        pattern: new this.Pattern({
           ...this.url,
           pathname,
           hash,
@@ -119,7 +124,10 @@ export class CreateHistory<RN extends RouteName> {
   private watchers: VoidFunction[] = []
 
   /** History API based router. */
-  constructor({ routes }: Options<RN>) {
+  constructor({ routes, URLPattern }: Options<RN>) {
+    // @ts-ignore
+    if (URLPattern) this.Pattern = URLPattern
+
     this.routeData = signal(routes)
 
     this.events.push(this.autoUpdate())

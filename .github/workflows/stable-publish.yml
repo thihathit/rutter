@@ -3,7 +3,7 @@ name: Stable release
 on:
   push:
     tags:
-    - !'v*.*.*-rc.*'
+    - '!v*.*.*-rc.*'
 
 jobs:
   release:

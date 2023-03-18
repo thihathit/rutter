@@ -68,11 +68,7 @@ export const on = router.on.bind(router)
 export const useRouterState = () => {
   const [state, setState] = useState(router.summaryState)
 
-  useEffect(() => {
-    const cleanup = router.watchSummaryState(setState)
-
-    return cleanup
-  }, [])
+  useEffect(() => router.watchSummaryState(setState), [])
 
   return state
 }
@@ -80,11 +76,7 @@ export const useRouterState = () => {
 export const useRoute = () => {
   const [state, setState] = useState(router.routeState)
 
-  useEffect(() => {
-    const cleanup = router.watchRouteState(setState)
-
-    return cleanup
-  }, [])
+  useEffect(() => router.watchRouteState(setState), [])
 
   return state
 }

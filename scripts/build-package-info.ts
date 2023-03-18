@@ -37,8 +37,10 @@ if (options.success == false) {
   // Sync version
   pkg.version = trimStart(version, 'v')
 
-  // Remove scripts
+  // Cleanup
   delete pkg.scripts
+  delete pkg.engines
+  delete pkg.packageManager
 
   await writeFile(sourcePkg, JSON.stringify(pkg, null, 2))
 }

@@ -1,7 +1,6 @@
 import { SetRequired } from 'type-fest'
 
 import { URLBuilderOptions } from '$utility/url'
-import { EditorFriendly } from '$utility/types'
 
 type PatternFields = Pick<URLPattern, 'pathname' | 'search' | 'hash'>
 
@@ -19,9 +18,7 @@ type Fields = {
   meta?: unknown
 }
 
-type Value = EditorFriendly<
-  SetRequired<Partial<PatternFields>, 'pathname'> & Fields
->
+type Value = SetRequired<Partial<PatternFields>, 'pathname'> & Fields
 
 /** Unique route name */
 export type RouteName = string
@@ -44,7 +41,7 @@ export type DetailsValue = Value & {
 
 export type RedirectMode = 'pushState' | 'replaceState'
 
-type RedirectOptions = EditorFriendly<URLBuilderOptions & { replace?: boolean }>
+type RedirectOptions = URLBuilderOptions & { replace?: boolean }
 
 export type MainRedirectOptions =
   | RedirectOptions

@@ -18,6 +18,7 @@
     "baseUrl": ".",
     "paths": {
       "$core": ["core/index"],
+      "$utility": ["utility/index"],
 
       "$core/*": ["core/*"],
       "$utility/*": ["utility/*"]

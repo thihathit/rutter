@@ -191,7 +191,7 @@ export class CreateHistory<RN extends RouteName> {
    * Returns `true` if one of them matches.
    */
   public onOneOf(names: RN[]) {
-    const matches = names.map(this.on)
+    const matches = names.map(name => this.on(name))
 
     return !!matches.filter(Boolean).length
   }

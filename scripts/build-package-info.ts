@@ -38,7 +38,7 @@ if (options.success == false) {
   pkg.version = trimStart(version, 'v')
 
   // Cleanup
-  delete pkg.scripts
+  delete pkg.scripts.postinstall
   delete pkg.engines
   delete pkg.packageManager
 

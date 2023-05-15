@@ -38,7 +38,7 @@ jobs:
         run: pnpm bundle
 
       - name: Build Package Info
-        run: pnpm dlx tsx --tsconfig ./tsconfig.json ./scripts/build-package-info.ts version=${{ needs.release.outputs.tag-name }}
+        run: pnpm pkg:prepare version=${{ needs.release.outputs.tag-name }}
 
       - name: Register
         run: pnpm publish --no-git-checks

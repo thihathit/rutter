@@ -61,3 +61,19 @@ jobs:
 
       - name: Build Library
         run: pnpm bundle
+
+  lint-package:
+    name: Package Testing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/actions/environment-prepare
+
+      - name: Build Library
+        run: pnpm bundle
+
+      - name: Build Mocked Package Info
+        run: pnpm pkg:prepare version=v1.0.0
+
+      - name: Test Library
+        run: pnpm lint:package

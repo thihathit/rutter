@@ -16,13 +16,13 @@ jobs:
 
       - name: Semantic release
         id: release
-        uses: cycjimmy/semantic-release-action@v3
+        uses: cycjimmy/semantic-release-action@v2
         with:
           semantic_version: 18
           extra_plugins: |
-            @semantic-release/release-notes-generator
-            @semantic-release/github
-            conventional-changelog-conventionalcommits
+            @semantic-release/release-notes-generator@^10
+            @semantic-release/github@^8
+            conventional-changelog-conventionalcommits@^5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

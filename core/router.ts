@@ -134,7 +134,7 @@ export class CreateHistory<RN extends RouteName> {
   }
 
   /** Update upon URL change */
-  private autoUpdate() {
+  private autoUpdate = () => {
     const action = () => {
       this.update()
     }
@@ -157,11 +157,11 @@ export class CreateHistory<RN extends RouteName> {
     return this.route.value
   }
 
-  public getDetail(name: RN) {
+  public getDetail = (name: RN) => {
     return this.details.value[name]
   }
 
-  public getCurrentDetail() {
+  public getCurrentDetail = () => {
     const name = this.current.value
 
     if (!name) return
@@ -170,12 +170,12 @@ export class CreateHistory<RN extends RouteName> {
   }
 
   /** Refresh route information */
-  public update() {
+  public update = () => {
     this.url.value = getCurrentURL()
   }
 
   /** Check current route name */
-  public on(name: RN) {
+  public on = (name: RN) => {
     const currentRN = this.current.value
 
     if (!currentRN) return false
@@ -190,14 +190,14 @@ export class CreateHistory<RN extends RouteName> {
    *
    * Returns `true` if one of them matches.
    */
-  public onOneOf(names: RN[]) {
+  public onOneOf = (names: RN[]) => {
     const matches = names.map(name => this.on(name))
 
     return !!matches.filter(Boolean).length
   }
 
   /** Jump between routes. */
-  public redirect(name: RN, options: MainRedirectOptions = {}) {
+  public redirect = (name: RN, options: MainRedirectOptions = {}) => {
     const { hash, params, queryParams } = this.route.value
 
     const { replace = false, ...rest } = (() => {
@@ -224,9 +224,9 @@ export class CreateHistory<RN extends RouteName> {
   }
 
   /** Watch: `summaryState` */
-  public watchSummaryState(
+  public watchSummaryState = (
     callback: (summaryState: CreateHistory<RN>['summaryState']) => void
-  ) {
+  ) => {
     const cleanup = effect(() => callback(this.summary.value))
 
     this.watchers.push(cleanup)
@@ -235,9 +235,9 @@ export class CreateHistory<RN extends RouteName> {
   }
 
   /** Watch: `routeState` */
-  public watchRouteState(
+  public watchRouteState = (
     callback: (routeState: CreateHistory<RN>['routeState']) => void
-  ) {
+  ) => {
     const cleanup = effect(() => callback(this.route.value))
 
     this.watchers.push(cleanup)
@@ -246,7 +246,7 @@ export class CreateHistory<RN extends RouteName> {
   }
 
   /** De-register events, watchers */
-  public destroy() {
+  public destroy = () => {
     const stoppers = [...this.watchers, ...this.events]
 
     stoppers.map(stop => stop())

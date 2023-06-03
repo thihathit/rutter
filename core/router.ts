@@ -1,7 +1,6 @@
-import { mapValues } from 'lodash-es'
 import { Signal, signal, computed, effect } from '@preact/signals-core'
 
-import { buildURL } from '$utility/url'
+import { mapValues, buildURL } from '$utility'
 
 import {
   RouteName,

@@ -40,12 +40,14 @@ router.onOneOf(['index', 'about']) // boolean
 import { CreateHistory } from 'rutter'
 import { useEffect, useState } from 'react'
 
-/**
- * Note: you cannot destructure/re-export `router` instance's methods directly.
- *
- * Unless you re-bind `router` instance to the function.
- */
-const router = new CreateHistory({
+export const {
+  redirect,
+  on,
+  summaryState,
+  routeState,
+  watchSummaryState,
+  watchRouteState
+} = new CreateHistory({
   routes: {
     index: {
       pathname: '/'
@@ -62,21 +64,18 @@ const router = new CreateHistory({
   }
 })
 
-export const redirect = router.redirect.bind(router)
-export const on = router.on.bind(router)
-
 export const useRouterState = () => {
-  const [state, setState] = useState(router.summaryState)
+  const [state, setState] = useState(summaryState)
 
-  useEffect(() => router.watchSummaryState(setState), [])
+  useEffect(() => watchSummaryState(setState), [])
 
   return state
 }
 
 export const useRoute = () => {
-  const [state, setState] = useState(router.routeState)
+  const [state, setState] = useState(routeState)
 
-  useEffect(() => router.watchRouteState(setState), [])
+  useEffect(() => watchRouteState(setState), [])
 
   return state
 }
@@ -90,7 +89,7 @@ import { FC } from 'react'
 import { on, redirect, useRoute } from './router'
 
 const App: FC = () => {
-  const route = useRoute()
+  const { is404, ...restStates } = useRoute()
 
   return (
     <>
@@ -108,7 +107,7 @@ const App: FC = () => {
         <legend>Body:</legend>
 
         <div>
-          {route.is404 ? (
+          {is404 ? (
             <h1>404 Page</h1>
           ) : (
             <>
@@ -144,7 +143,7 @@ const App: FC = () => {
         <legend>Current route detail:</legend>
 
         <code>
-          <pre>{JSON.stringify(route, null, 2)}</pre>
+          <pre>{JSON.stringify(restStates, null, 2)}</pre>
         </code>
       </fieldset>
     </>

@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { on, redirect, useRoute } from './router'
 
 export const App: FC = () => {
-  const route = useRoute()
+  const { is404, ...restStates } = useRoute()
 
   return (
     <>
@@ -23,7 +23,7 @@ export const App: FC = () => {
         <legend>Body:</legend>
 
         <div>
-          {route.is404 ? (
+          {is404 ? (
             <h1>404 Page</h1>
           ) : (
             <>
@@ -59,7 +59,7 @@ export const App: FC = () => {
         <legend>Current route detail:</legend>
 
         <code>
-          <pre>{JSON.stringify(route, null, 2)}</pre>
+          <pre>{JSON.stringify(restStates, null, 2)}</pre>
         </code>
       </fieldset>
     </>

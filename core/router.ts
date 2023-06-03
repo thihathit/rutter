@@ -133,6 +133,14 @@ export class CreateHistory<RN extends RouteName> {
     this.events.push(this.autoUpdate())
   }
 
+  private getWatcherCleaner = (watcher: VoidFunction) => {
+    return () => {
+      const index = this.watchers.indexOf(watcher)
+
+      this.watchers.splice(index, 1)
+    }
+  }
+
   /** Update upon URL change */
   private autoUpdate = () => {
     const action = () => {
@@ -227,29 +235,28 @@ export class CreateHistory<RN extends RouteName> {
   public watchSummaryState = (
     callback: (summaryState: CreateHistory<RN>['summaryState']) => void
   ) => {
-    const cleanup = effect(() => callback(this.summary.value))
+    const watcher = effect(() => callback(this.summary.value))
 
-    this.watchers.push(cleanup)
+    this.watchers.push(watcher)
 
-    return cleanup
+    return this.getWatcherCleaner(watcher)
   }
 
   /** Watch: `routeState` */
   public watchRouteState = (
     callback: (routeState: CreateHistory<RN>['routeState']) => void
   ) => {
-    const cleanup = effect(() => callback(this.route.value))
+    const watcher = effect(() => callback(this.route.value))
 
-    this.watchers.push(cleanup)
+    this.watchers.push(watcher)
 
-    return cleanup
+    return this.getWatcherCleaner(watcher)
   }
 
   /** De-register events, watchers */
   public destroy = () => {
-    const stoppers = [...this.watchers, ...this.events]
-
-    stoppers.map(stop => stop())
+    this.watchers.map(stop => stop())
+    this.events.map(stop => stop())
 
     this.events = []
     this.watchers = []

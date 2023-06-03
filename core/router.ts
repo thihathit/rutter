@@ -10,12 +10,13 @@ import {
   RouteWithPatternValue,
   DetailsValue,
   RedirectMode,
-  MainRedirectOptions
+  MainRedirectOptions,
+  MetaValue
 } from './types'
 
-type Options<RN extends RouteName> = {
+type Options<RN extends RouteName, FieldsMeta extends MetaValue> = {
   /** Register your routes here. */
-  routes: Data<RN>
+  routes: Data<RN, FieldsMeta>
 
   /** Replace with ponyfill. */
   URLPattern?: unknown
@@ -23,17 +24,17 @@ type Options<RN extends RouteName> = {
 
 const getCurrentURL = () => new URL(self.location.toString())
 
-export class CreateHistory<RN extends RouteName> {
+export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   private Pattern = URLPattern
 
   private url = signal(getCurrentURL())
 
   /** `Reactive` */
-  private routeData: Signal<Data<RN>>
+  private routeData: Signal<Data<RN, FieldsMeta>>
 
   /** `Reactive` */
   private withPattern = computed(() =>
-    mapValues<Data<RN>, RouteWithPatternValue>(
+    mapValues<Data<RN, FieldsMeta>, RouteWithPatternValue<FieldsMeta>>(
       this.routeData.value,
       ({ pathname, hash = '*', search = '*', ...rest }) => ({
         pathname,
@@ -52,7 +53,7 @@ export class CreateHistory<RN extends RouteName> {
 
   /** `Reactive` */
   private details = computed(() =>
-    mapValues<WithPattern<RN>, DetailsValue>(
+    mapValues<WithPattern<RN, FieldsMeta>, DetailsValue<FieldsMeta>>(
       this.withPattern.value,
       ({ pattern, ...rest }) => ({
         pattern,
@@ -124,7 +125,7 @@ export class CreateHistory<RN extends RouteName> {
   private watchers: VoidFunction[] = []
 
   /** History API based router. */
-  constructor({ routes, URLPattern }: Options<RN>) {
+  constructor({ routes, URLPattern }: Options<RN, FieldsMeta>) {
     // @ts-ignore
     if (URLPattern) this.Pattern = URLPattern
 
@@ -233,7 +234,9 @@ export class CreateHistory<RN extends RouteName> {
 
   /** Watch: `summaryState` */
   public watchSummaryState = (
-    callback: (summaryState: CreateHistory<RN>['summaryState']) => void
+    callback: (
+      summaryState: CreateHistory<RN, FieldsMeta>['summaryState']
+    ) => void
   ) => {
     const watcher = effect(() => callback(this.summary.value))
 
@@ -244,7 +247,7 @@ export class CreateHistory<RN extends RouteName> {
 
   /** Watch: `routeState` */
   public watchRouteState = (
-    callback: (routeState: CreateHistory<RN>['routeState']) => void
+    callback: (routeState: CreateHistory<RN, FieldsMeta>['routeState']) => void
   ) => {
     const watcher = effect(() => callback(this.route.value))
 

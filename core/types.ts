@@ -2,9 +2,15 @@ import { SetRequired } from 'type-fest'
 
 import { URLBuilderOptions } from '$utility/url'
 
+/** Unique route name */
+export type RouteName = string
+
+/** Default value */
+export type MetaValue = unknown
+
 type PatternFields = Pick<URLPattern, 'pathname' | 'search' | 'hash'>
 
-type Fields = {
+type Fields<Meta extends MetaValue> = {
   /**
    * **Usage**: Mark as placeholder route or URL grouping segment.
    *
@@ -15,26 +21,31 @@ type Fields = {
   /**
    * Custom meta data
    */
-  meta?: unknown
+  meta?: Meta
 }
 
-type Value = SetRequired<Partial<PatternFields>, 'pathname'> & Fields
+type Value<FieldsMeta extends MetaValue> = SetRequired<
+  Partial<PatternFields>,
+  'pathname'
+> &
+  Fields<FieldsMeta>
 
-/** Unique route name */
-export type RouteName = string
+export type RouteWithPatternValue<FieldsMeta extends MetaValue> =
+  Fields<FieldsMeta> & {
+    pattern: URLPattern
+  } & PatternFields
 
-export type RouteWithPatternValue = Fields & {
-  pattern: URLPattern
-} & PatternFields
-
-export type Data<Name extends RouteName> = Record<Name, Value>
-
-export type WithPattern<Name extends RouteName> = Record<
+export type Data<Name extends RouteName, FieldsMeta extends MetaValue> = Record<
   Name,
-  RouteWithPatternValue
+  Value<FieldsMeta>
 >
 
-export type DetailsValue = Value & {
+export type WithPattern<
+  Name extends RouteName,
+  FieldsMeta extends MetaValue
+> = Record<Name, RouteWithPatternValue<FieldsMeta>>
+
+export type DetailsValue<FieldsMeta> = Value<FieldsMeta> & {
   isMatch: ReturnType<URLPattern['test']>
   detail: ReturnType<URLPattern['exec']>
 }

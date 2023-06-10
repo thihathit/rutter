@@ -45,7 +45,7 @@ export type WithPattern<
   FieldsMeta extends MetaValue
 > = Record<Name, RouteWithPatternValue<FieldsMeta>>
 
-export type DetailsValue<FieldsMeta> = Value<FieldsMeta> & {
+export type DetailsValue<FieldsMeta extends MetaValue> = Value<FieldsMeta> & {
   isMatch: ReturnType<URLPattern['test']>
   detail: ReturnType<URLPattern['exec']>
 }

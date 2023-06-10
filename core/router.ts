@@ -25,23 +25,23 @@ type Options<RN extends RouteName, FieldsMeta extends MetaValue> = {
 const getCurrentURL = () => new URL(self.location.toString())
 
 export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
-  private Pattern = URLPattern
+  #Pattern = URLPattern
 
-  private url = signal(getCurrentURL())
-
-  /** `Reactive` */
-  private routeData: Signal<Data<RN, FieldsMeta>>
+  #url = signal(getCurrentURL())
 
   /** `Reactive` */
-  private withPattern = computed(() =>
+  #routeData: Signal<Data<RN, FieldsMeta>>
+
+  /** `Reactive` */
+  #withPattern = computed(() =>
     mapValues<Data<RN, FieldsMeta>, RouteWithPatternValue<FieldsMeta>>(
-      this.routeData.value,
+      this.#routeData.value,
       ({ pathname, hash = '*', search = '*', ...rest }) => ({
         pathname,
         search,
         hash,
-        pattern: new this.Pattern({
-          ...this.url,
+        pattern: new this.#Pattern({
+          ...this.#url,
           pathname,
           hash,
           search
@@ -52,21 +52,21 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   )
 
   /** `Reactive` */
-  private details = computed(() =>
+  #details = computed(() =>
     mapValues<WithPattern<RN, FieldsMeta>, DetailsValue<FieldsMeta>>(
-      this.withPattern.value,
+      this.#withPattern.value,
       ({ pattern, ...rest }) => ({
         pattern,
-        isMatch: pattern.test(this.url.value),
-        detail: pattern.exec(this.url.value),
+        isMatch: pattern.test(this.#url.value),
+        detail: pattern.exec(this.#url.value),
         ...rest
       })
     )
   )
 
   /** `Reactive` */
-  private current = computed(() => {
-    const details = this.details.value
+  #current = computed(() => {
+    const details = this.#details.value
 
     const routeNames = Object.keys(details) as RN[]
 
@@ -82,8 +82,8 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   })
 
   /** `Reactive` */
-  private route = computed(() => {
-    const url = this.url.value
+  #route = computed(() => {
+    const url = this.#url.value
     const info = this.getCurrentDetail()
 
     const detail = info?.detail
@@ -109,41 +109,41 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   })
 
   /** `Reactive` */
-  private summary = computed(() => ({
-    url: this.url.value,
-    routeData: this.routeData.value,
-    withPattern: this.withPattern.value,
-    details: this.details.value,
-    route: this.route.value,
-    current: this.current.value
+  #summary = computed(() => ({
+    url: this.#url.value,
+    routeData: this.#routeData.value,
+    withPattern: this.#withPattern.value,
+    details: this.#details.value,
+    route: this.#route.value,
+    current: this.#current.value
   }))
 
   /** Registered events. Invoked upon cleanup process */
-  private events: VoidFunction[] = []
+  #events: VoidFunction[] = []
 
   /** Registered effects. Invoked upon cleanup process */
-  private watchers: VoidFunction[] = []
+  #watchers: VoidFunction[] = []
 
   /** History API based router. */
   constructor({ routes, URLPattern }: Options<RN, FieldsMeta>) {
     // @ts-ignore
-    if (URLPattern) this.Pattern = URLPattern
+    if (URLPattern) this.#Pattern = URLPattern
 
-    this.routeData = signal(routes)
+    this.#routeData = signal(routes)
 
-    this.events.push(this.autoUpdate())
+    this.#events.push(this.#autoUpdate())
   }
 
-  private getWatcherCleaner = (watcher: VoidFunction) => {
+  #getWatcherCleaner = (watcher: VoidFunction) => {
     return () => {
-      const index = this.watchers.indexOf(watcher)
+      const index = this.#watchers.indexOf(watcher)
 
-      this.watchers.splice(index, 1)
+      this.#watchers.splice(index, 1)
     }
   }
 
   /** Update upon URL change */
-  private autoUpdate = () => {
+  #autoUpdate = () => {
     const action = () => {
       this.update()
     }
@@ -158,20 +158,20 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
 
   /** Overall detail */
   get summaryState() {
-    return this.summary.value
+    return this.#summary.value
   }
 
   /** Current route detail */
   get routeState() {
-    return this.route.value
+    return this.#route.value
   }
 
-  public getDetail = (name: RN) => {
-    return this.details.value[name]
+  getDetail = (name: RN) => {
+    return this.#details.value[name]
   }
 
-  public getCurrentDetail = () => {
-    const name = this.current.value
+  getCurrentDetail = () => {
+    const name = this.#current.value
 
     if (!name) return
 
@@ -179,13 +179,13 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   }
 
   /** Refresh route information */
-  public update = () => {
-    this.url.value = getCurrentURL()
+  update = () => {
+    this.#url.value = getCurrentURL()
   }
 
   /** Check current route name */
-  public on = (name: RN) => {
-    const currentRN = this.current.value
+  on = (name: RN) => {
+    const currentRN = this.#current.value
 
     if (!currentRN) return false
 
@@ -199,15 +199,15 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
    *
    * Returns `true` if one of them matches.
    */
-  public onOneOf = (names: RN[]) => {
+  onOneOf = (names: RN[]) => {
     const matches = names.map(name => this.on(name))
 
     return !!matches.filter(Boolean).length
   }
 
   /** Jump between routes. */
-  public redirect = (name: RN, options: MainRedirectOptions = {}) => {
-    const { hash, params, queryParams } = this.route.value
+  redirect = (name: RN, options: MainRedirectOptions = {}) => {
+    const { hash, params, queryParams } = this.#route.value
 
     const { replace = false, ...rest } = (() => {
       if (typeof options == 'function') {
@@ -233,36 +233,36 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   }
 
   /** Watch: `summaryState` */
-  public watchSummaryState = (
+  watchSummaryState = (
     callback: (
       summaryState: CreateHistory<RN, FieldsMeta>['summaryState']
     ) => void
   ) => {
-    const watcher = effect(() => callback(this.summary.value))
+    const watcher = effect(() => callback(this.#summary.value))
 
-    this.watchers.push(watcher)
+    this.#watchers.push(watcher)
 
-    return this.getWatcherCleaner(watcher)
+    return this.#getWatcherCleaner(watcher)
   }
 
   /** Watch: `routeState` */
-  public watchRouteState = (
+  watchRouteState = (
     callback: (routeState: CreateHistory<RN, FieldsMeta>['routeState']) => void
   ) => {
-    const watcher = effect(() => callback(this.route.value))
+    const watcher = effect(() => callback(this.#route.value))
 
-    this.watchers.push(watcher)
+    this.#watchers.push(watcher)
 
-    return this.getWatcherCleaner(watcher)
+    return this.#getWatcherCleaner(watcher)
   }
 
   /** De-register events, watchers */
-  public destroy = () => {
-    this.watchers.map(stop => stop())
-    this.events.map(stop => stop())
+  destroy = () => {
+    this.#watchers.map(stop => stop())
+    this.#events.map(stop => stop())
 
-    this.events = []
-    this.watchers = []
+    this.#events = []
+    this.#watchers = []
   }
 }
 

@@ -136,9 +136,9 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
 
   #getWatcherCleaner = (watcher: VoidFunction) => {
     return () => {
-      const index = this.#watchers.indexOf(watcher)
+      watcher()
 
-      this.#watchers.splice(index, 1)
+      this.#watchers = this.#watchers.filter(effect => effect !== watcher)
     }
   }
 

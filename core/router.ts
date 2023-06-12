@@ -258,8 +258,8 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
 
   /** De-register events, watchers */
   destroy = () => {
-    this.#watchers.map(stop => stop())
-    this.#events.map(stop => stop())
+    this.#watchers.forEach(stop => stop())
+    this.#events.forEach(stop => stop())
 
     this.#events = []
     this.#watchers = []

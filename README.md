@@ -7,6 +7,7 @@
 ## Usage
 
 - [<img src="./docs/logos/javascript.svg" width="14"/> Vanilla JS](#-vanillajs)
+- [<img src="./docs/logos/vue.svg" width="14"/> Vue](#-vue-bindings-via-shallowrefcomputed)
 - [<img src="./docs/logos/react.svg" width="14"/> React](#-react-bindings-via-usestate)
 - [<img src="./docs/logos/svelte.svg" width="14"/> Svelte](#-svelte-bindings-via-readablederived)
 
@@ -155,6 +156,118 @@ const App: FC = () => {
 }
 ```
 
+### <img src="./docs/logos/vue.svg" width="14"/> Vue bindings: via `shallowRef`/`computed`
+
+```ts
+// router.(ts|js)
+
+import { computed, shallowRef } from 'vue'
+import { CreateHistory } from 'rutter'
+
+import { mapValues } from 'lodash-es'
+
+const router = new CreateHistory({
+  routes: {
+    index: {
+      pathname: '/'
+    },
+    about: {
+      pathname: '/about'
+    },
+    blog: {
+      pathname: '/blog'
+    },
+    blogDetail: {
+      pathname: '/blog/:id'
+    }
+  }
+})
+
+const {
+  //
+  summaryState,
+  routeState,
+  watchSummaryState,
+  watchRouteState,
+  on
+} = router
+
+export const { redirect } = router
+
+export const routerState = shallowRef(summaryState)
+export const route = shallowRef(routeState)
+
+export const is404 = computed(() => route.value.is404)
+
+export const matches = computed(() => {
+  const { details } = routerState.value
+
+  type RouteNames = keyof typeof details
+
+  return mapValues(details, (_, name) => on(name as RouteNames))
+})
+
+watchSummaryState(state => {
+  routerState.value = state
+})
+
+watchRouteState(state => {
+  route.value = state
+})
+```
+
+```vue
+<script setup lang="ts">
+// app.vue
+import { redirect, route, matches, is404 } from './router'
+</script>
+
+<template>
+  <nav>
+    <button @click="() => redirect('index')">Index</button>
+
+    <button @click="() => redirect('blog')">Blog</button>
+
+    <a href="/invalid-url">
+      <button>404</button>
+    </a>
+  </nav>
+
+  <fieldset>
+    <legend>Body:</legend>
+    <div>
+      <h1 v-if="is404">404 Page</h1>
+
+      <template v-else>
+        <h1 v-if="matches.index">Index Page</h1>
+
+        <h1 v-if="matches.about">About Page</h1>
+
+        <template v-if="matches.blog">
+          <h1>Blog Page</h1>
+
+          <button
+            @click="() => redirect('blogDetail', { params: { id: 123 } })"
+          >
+            Blog Detail
+          </button>
+        </template>
+
+        <h1 v-if="matches.blogDetail">Blog Detail Page</h1>
+      </template>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>Current route detail:</legend>
+
+    <code>
+      <pre>{{ route }}</pre>
+    </code>
+  </fieldset>
+</template>
+```
+
 ### <img src="./docs/logos/svelte.svg" width="14"/> Svelte bindings: via `readable`/`derived`
 
 ```ts
@@ -162,6 +275,7 @@ const App: FC = () => {
 
 import { readable, derived } from 'svelte/store'
 import { CreateHistory } from 'rutter'
+
 import { mapValues } from 'lodash-es'
 
 const router = new CreateHistory({
@@ -252,7 +366,6 @@ export const matches = derived(routerState, ({ details }) =>
     <pre>{data}</pre>
   </code>
 </fieldset>
-
 ```
 
 ## Documentation

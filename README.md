@@ -8,7 +8,7 @@
 
 - [<img src="./docs/logos/javascript.svg" width="14"/> Vanilla JS](#-vanillajs)
 - [<img src="./docs/logos/vue.svg" width="14"/> Vue](#-vue-bindings-via-shallowrefcomputed)
-- [<img src="./docs/logos/react.svg" width="14"/> React](#-react-bindings-via-usestate)
+- [<img src="./docs/logos/react.svg" width="14"/> React](#-react-bindings-via-usestatecontext)
 - [<img src="./docs/logos/svelte.svg" width="14"/> Svelte](#-svelte-bindings-via-readablederived)
 
 ### <img src="./docs/logos/javascript.svg" width="14"/> VanillaJS
@@ -37,13 +37,21 @@ router.on('index') // boolean
 router.onOneOf(['index', 'about']) // boolean
 ```
 
-### <img src="./docs/logos/react.svg" width="14"/> React bindings: via `useState`
+### <img src="./docs/logos/react.svg" width="14"/> React bindings: via `useState`/`context`
 
-```ts
-// router.(ts|js)
+```tsx
+// router.(tsx|jsx)
+
+import {
+  FC,
+  PropsWithChildren,
+  createContext,
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 
 import { CreateHistory } from 'rutter'
-import { useEffect, useState } from 'react'
 
 export const {
   redirect,
@@ -69,20 +77,39 @@ export const {
   }
 })
 
-export const useRouterState = () => {
-  const [state, setState] = useState(summaryState)
+/**
+ * Although using with `context` is recommended for performance reason, you can directly use this hook if you don't want to store all the states in `context` tree.
+ */
+export const useRouterValues = () => {
+  const [routeStateValue, setRouteStateState] = useState(routeState)
+  const [summaryStateValue, setSummaryStateState] = useState(summaryState)
 
-  useEffect(() => watchSummaryState(setState), [])
+  useEffect(() => watchRouteState(setRouteStateState), [])
+  useEffect(() => watchSummaryState(setSummaryStateState), [])
 
-  return state
+  return {
+    routeState: routeStateValue,
+    summaryState: summaryStateValue
+  }
+}
+
+const context = createContext({
+  routeState,
+  summaryState
+})
+
+const useRouterContext = () => useContext(context)
+
+export const RouterProvider: FC<PropsWithChildren> = ({ children }) => {
+  const value = useRouterValues()
+
+  return <context.Provider value={value}>{children}</context.Provider>
 }
 
 export const useRoute = () => {
-  const [state, setState] = useState(routeState)
+  const { routeState } = useRouterContext()
 
-  useEffect(() => watchRouteState(setState), [])
-
-  return state
+  return routeState
 }
 ```
 
@@ -91,9 +118,9 @@ export const useRoute = () => {
 
 import { FC } from 'react'
 
-import { on, redirect, useRoute } from './router'
+import { on, redirect, useRoute, RouterProvider } from './router'
 
-const App: FC = () => {
+const Routing: FC = () => {
   const { is404, ...restStates } = useRoute()
 
   return (
@@ -154,6 +181,12 @@ const App: FC = () => {
     </>
   )
 }
+
+const App: FC = () => (
+  <RouterProvider>
+    <Routing />
+  </RouterProvider>
+)
 ```
 
 ### <img src="./docs/logos/vue.svg" width="14"/> Vue bindings: via `shallowRef`/`computed`

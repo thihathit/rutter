@@ -204,6 +204,15 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
     return !!matches.filter(Boolean).length
   }
 
+  /**
+   * Similar to `on()` except this only check for route pattern.
+   *
+   * Whereas `on` consider options such as `ignore`.
+   */
+  onRouteMatch = (name: RN) => {
+    return this.getDetail(name).isMatch
+  }
+
   /** Jump between routes. */
   redirect = (name: RN, options: MainRedirectOptions = {}) => {
     const { hash, params, queryParams } = this.#route.value

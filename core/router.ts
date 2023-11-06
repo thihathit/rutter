@@ -12,6 +12,7 @@ import {
   MainRedirectOptions,
   MetaValue
 } from './types'
+import { trailingSlash } from './normalizers'
 
 type Options<RN extends RouteName, FieldsMeta extends MetaValue> = {
   /** Register your routes here. */
@@ -35,18 +36,32 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
   #withPattern = computed(() =>
     mapValues<Data<RN, FieldsMeta>, RouteWithPatternValue<FieldsMeta>>(
       this.#routeData.value,
-      ({ pathname, hash = '*', search = '*', ...rest }) => ({
-        pathname,
-        search,
-        hash,
-        pattern: new this.#Pattern({
+      ({ pathname, hash = '', search = '', normalize = true, ...rest }) => {
+        const patternOptions = { hash, search, pathname }
+
+        if (normalize) {
+          const { hash = '*', search = '*', pathname } = patternOptions
+
+          patternOptions.hash = hash
+          patternOptions.search = search
+
+          if (!trailingSlash.matchAny(pathname)) {
+            patternOptions.pathname = `${pathname}{/}?`
+          }
+        }
+
+        const pattern = new this.#Pattern({
           ...this.#url,
-          pathname,
-          hash,
-          search
-        }),
-        ...rest
-      })
+          ...patternOptions
+        })
+
+        return {
+          pattern,
+          normalize,
+          ...patternOptions,
+          ...rest
+        }
+      }
     )
   )
 

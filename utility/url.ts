@@ -1,5 +1,7 @@
 import { Primitive } from 'type-fest'
 
+import { trailingSlash } from '$core/normalizers'
+
 type Value = Exclude<Primitive, symbol>
 type Data = {
   [key: string]: Value
@@ -13,13 +15,18 @@ export type URLBuilderOptions = {
   queryParams?: Data
 }
 
-export const buildURL = <T extends string>(
-  path: T,
+export const buildURL = (
+  pathname: string,
   options?: URLBuilderOptions
 ): URL => {
   const { params = {}, queryParams = {}, hash } = { ...options }
 
-  const pathname = path
+  // Exclude normalized pattern
+  if (trailingSlash.matchAny(pathname)) {
+    pathname = pathname.split(trailingSlash.pattern)[0]
+  }
+
+  const path = pathname
     .split('/')
     .map(v => {
       const tokenName = v.replace(':', '')
@@ -33,7 +40,7 @@ export const buildURL = <T extends string>(
     })
     .join('/')
 
-  const url = new URL(pathname, baseURL)
+  const url = new URL(path, baseURL)
 
   Object.keys(queryParams).map(name => {
     url.searchParams.set(name, `${queryParams[name]}`)

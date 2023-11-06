@@ -18,3 +18,21 @@ export const mapValues = <Value extends object, Result extends object>(
 
   return newValues
 }
+
+/**
+ * Checks if `string` ends with the given target string.
+ */
+const endsWith = (string: string, target: string, position?: number) => {
+  const { length } = string
+  position = position === undefined ? length : +position
+  if (position < 0 || position !== position) {
+    position = 0
+  } else if (position > length) {
+    position = length
+  }
+  const end = position
+  position -= target.length
+  return position >= 0 && string.slice(position, end) === target
+}
+
+export default endsWith

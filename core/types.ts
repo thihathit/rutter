@@ -12,6 +12,16 @@ type PatternFields = Pick<URLPattern, 'pathname' | 'search' | 'hash'>
 
 type Fields<Meta extends MetaValue> = {
   /**
+   * Normalize patterns.
+   *
+   * Default: `true`.
+   * - Handles unspecified `hash` by accepting `*` wildcard.
+   * - Handles unspecified `search` query by accepting `*` wildcard.
+   * - Handles `pathname` with unspecified trailing slashes by adding `{/}?` pattern at the end.
+   */
+  normalize?: boolean
+
+  /**
    * **Usage**: Mark as placeholder route or URL grouping segment.
    *
    * **Example**: In `/auth/:method`, `auth` isn't a route, just a URL grouping path. Since it's not a route, it's considered `404` page when accessed.

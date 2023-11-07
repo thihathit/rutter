@@ -40,10 +40,8 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
         const patternOptions = { hash, search, pathname }
 
         if (normalize) {
-          const { hash = '*', search = '*', pathname } = patternOptions
-
-          patternOptions.hash = hash
-          patternOptions.search = search
+          patternOptions.hash = hash || '*'
+          patternOptions.search = search || '*'
 
           if (!trailingSlash.matchAny(pathname)) {
             patternOptions.pathname = `${pathname}{/}?`
@@ -51,7 +49,7 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
         }
 
         const pattern = new this.#Pattern({
-          ...this.#url,
+          ...this.#url.value,
           ...patternOptions
         })
 

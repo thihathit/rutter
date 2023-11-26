@@ -1,8 +1,6 @@
-import { Primitive } from 'type-fest'
-
 import { trailingSlash } from '$core/normalizers'
 
-type Value = Exclude<Primitive, symbol>
+type Value = string | number | bigint | boolean | undefined
 type Data = {
   [key: string]: Value
 }

@@ -25,7 +25,6 @@ specifiers:
   react-dom: ^18.2.0
   tsup: ^6.6.3
   tsx: ^3.12.7
-  type-fest: ^3.6.1
   typescript: ^4.9.3
   urlpattern-polyfill: ^6.0.2
   vite: ^4.1.0
@@ -59,7 +58,6 @@ devDependencies:
   react-dom: 18.2.0_react@18.2.0
   tsup: 6.6.3_typescript@4.9.5
   tsx: 3.12.7
-  type-fest: 3.6.1
   typescript: 4.9.5
   urlpattern-polyfill: 6.0.2
   vite: 4.1.5
@@ -3966,11 +3964,6 @@ packages:
   /type-fest/0.8.1:
     resolution: {integrity: sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==}
     engines: {node: '>=8'}
-    dev: true
-
-  /type-fest/3.6.1:
-    resolution: {integrity: sha512-htXWckxlT6U4+ilVgweNliPqlsVSSucbxVexRYllyMVJDtf5rTjv6kF/s+qAd4QSL1BZcnJPEJavYBPQiWuZDA==}
-    engines: {node: '>=14.16'}
     dev: true
 
   /typed-array-length/1.0.4:

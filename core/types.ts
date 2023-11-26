@@ -1,6 +1,7 @@
-import { SetRequired } from 'type-fest'
-
 import { URLBuilderOptions } from '$utility/url'
+
+type SetRequired<V extends object, T extends keyof V> = Omit<V, T> &
+  Pick<Required<V>, T>
 
 /** Unique route name */
 export type RouteName = string

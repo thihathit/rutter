@@ -4,8 +4,8 @@ type Value = string | number | bigint | boolean | undefined
 type Data = {
   [key: string]: Value
 }
-
 const baseURL = self.location.origin
+const excludedQueryParams: Value[] = [undefined]
 
 export type URLBuilderOptions = {
   params?: Data
@@ -40,9 +40,11 @@ export const buildURL = (
 
   const url = new URL(path, baseURL)
 
-  Object.keys(queryParams).map(name => {
-    url.searchParams.set(name, `${queryParams[name]}`)
-  })
+  for (const [name, value] of Object.entries(queryParams)) {
+    if (excludedQueryParams.includes(value)) continue
+
+    url.searchParams.set(name, `${value}`)
+  }
 
   if (hash) {
     url.hash = hash

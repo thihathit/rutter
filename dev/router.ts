@@ -11,7 +11,7 @@ export const {
 } = new CreateHistory({
   routes: {
     index: {
-      pathname: '/'
+      pathname: ''
     },
     about: {
       pathname: '/about'

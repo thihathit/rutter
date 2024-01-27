@@ -19,7 +19,7 @@ import { CreateHistory } from 'rutter'
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: '/'
+      pathname: ''
     },
     about: {
       pathname: '/about'
@@ -63,7 +63,7 @@ export const {
 } = new CreateHistory({
   routes: {
     index: {
-      pathname: '/'
+      pathname: ''
     },
     about: {
       pathname: '/about'
@@ -202,7 +202,7 @@ import { mapValues } from 'lodash-es'
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: '/'
+      pathname: ''
     },
     about: {
       pathname: '/about'
@@ -314,7 +314,7 @@ import { mapValues } from 'lodash-es'
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: '/'
+      pathname: ''
     },
     about: {
       pathname: '/about'

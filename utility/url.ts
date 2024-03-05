@@ -5,7 +5,7 @@ type Data = {
   [key: string]: Value
 }
 const baseURL = self.location.origin
-const excludedQueryParams: Value[] = [undefined]
+const excludedQueryParams: Value[] = [undefined, '']
 
 export type URLBuilderOptions = {
   params?: Data

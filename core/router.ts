@@ -4,10 +4,7 @@ import { mapValues, buildURL } from '$utility'
 
 import {
   RouteName,
-  WithPattern,
   Data,
-  RouteWithPatternValue,
-  DetailsValue,
   RedirectMode,
   MainRedirectOptions,
   MetaValue
@@ -34,29 +31,22 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
 
   /** `Reactive` */
   #withPattern = computed(() =>
-    mapValues<Data<RN, FieldsMeta>, RouteWithPatternValue<FieldsMeta>>(
+    mapValues(
       this.#routeData.value,
-      ({ pathname, hash = '', search = '', normalize = true, ...rest }) => {
+      ({ pathname, hash, search, normalize = true, ...rest }) => {
         const patternOptions = { hash, search, pathname }
 
         if (normalize) {
-          patternOptions.hash = hash || '*'
-          patternOptions.search = search || '*'
-
           if (!trailingSlash.matchAny(pathname)) {
             patternOptions.pathname = `${pathname}{/}?`
           }
         }
 
-        const pattern = new this.#Pattern({
-          ...this.#url.value,
-          ...patternOptions
-        })
+        const pattern = new this.#Pattern(patternOptions)
 
         return {
           pattern,
           normalize,
-          ...patternOptions,
           ...rest
         }
       }
@@ -65,15 +55,15 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
 
   /** `Reactive` */
   #details = computed(() =>
-    mapValues<WithPattern<RN, FieldsMeta>, DetailsValue<FieldsMeta>>(
-      this.#withPattern.value,
-      ({ pattern, ...rest }) => ({
-        pattern,
-        isMatch: pattern.test(this.#url.value),
-        detail: pattern.exec(this.#url.value),
-        ...rest
-      })
-    )
+    mapValues(this.#withPattern.value, routeData => ({
+      ...routeData,
+
+      /** `Matched against current route` */
+      isMatch: routeData.pattern.test(this.#url.value),
+
+      /** `Matched against current route. In details` */
+      detail: routeData.pattern.exec(this.#url.value)
+    }))
   )
 
   /** `Reactive` */
@@ -242,9 +232,9 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
       return options
     })()
 
-    const { pathname } = this.getDetail(name)
+    const { pattern } = this.getDetail(name)
 
-    const URL = buildURL(pathname, rest)
+    const URL = buildURL(pattern.pathname, rest)
 
     const method: RedirectMode = replace ? 'replaceState' : 'pushState'
 

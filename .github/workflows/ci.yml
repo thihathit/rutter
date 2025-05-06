@@ -77,3 +77,6 @@ jobs:
 
       - name: Test Library
         run: pnpm lint:package
+
+      - name: Pre-Publish Library
+        run: pnpm dlx pkg-pr-new publish

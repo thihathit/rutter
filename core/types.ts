@@ -9,7 +9,9 @@ export type RouteName = string
 /** Default value */
 export type MetaValue = unknown
 
-type PatternFields = Pick<URLPattern, 'pathname' | 'search' | 'hash'>
+type OptionalPatternFields = Partial<Pick<URLPattern, 'search' | 'hash'>>
+type RequiredPatternFields = Pick<URLPattern, 'pathname'>
+type PatternFields = OptionalPatternFields & RequiredPatternFields
 
 type Fields<Meta extends MetaValue> = {
   /**
@@ -35,31 +37,12 @@ type Fields<Meta extends MetaValue> = {
   meta?: Meta
 }
 
-type Value<FieldsMeta extends MetaValue> = SetRequired<
-  Partial<PatternFields>,
-  'pathname'
-> &
-  Fields<FieldsMeta>
-
-export type RouteWithPatternValue<FieldsMeta extends MetaValue> =
-  Fields<FieldsMeta> & {
-    pattern: URLPattern
-  } & PatternFields
+type Value<FieldsMeta extends MetaValue> = Fields<FieldsMeta>
 
 export type Data<Name extends RouteName, FieldsMeta extends MetaValue> = Record<
   Name,
-  Value<FieldsMeta>
+  SetRequired<Partial<PatternFields>, 'pathname'> & Value<FieldsMeta>
 >
-
-export type WithPattern<
-  Name extends RouteName,
-  FieldsMeta extends MetaValue
-> = Record<Name, RouteWithPatternValue<FieldsMeta>>
-
-export type DetailsValue<FieldsMeta extends MetaValue> = Value<FieldsMeta> & {
-  isMatch: ReturnType<URLPattern['test']>
-  detail: ReturnType<URLPattern['exec']>
-}
 
 export type RedirectMode = 'pushState' | 'replaceState'
 

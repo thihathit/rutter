@@ -1,29 +1,24 @@
 {
   "name": "rutter",
+  "version": "0.0.0",
   "description": "Framework-agnostic, lightweight router.",
   "keywords": [
     "framework-agnostic",
-    "router",
     "history-api",
-    "urlpattern",
-    "type-safe"
+    "router",
+    "type-safe",
+    "urlpattern"
   ],
-  "author": "Thiha Thit",
   "license": "MIT",
+  "author": "Thiha Thit",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/thihathit/rutter.git"
   },
-  "version": "0.0.0",
-  "type": "module",
-  "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a",
-  "engines": {
-    "node": ">=22.0.0",
-    "pnpm": ">=9.4.0"
-  },
   "files": [
     "dist"
   ],
+  "type": "module",
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -52,6 +47,9 @@
     "lint:commit": "commitlint --edit $1",
     "format": "oxfmt"
   },
+  "dependencies": {
+    "@preact/signals-core": "^1.2.3"
+  },
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
@@ -74,7 +72,9 @@
     "vite": "^8.0.14",
     "zod": "^4.4.3"
   },
-  "dependencies": {
-    "@preact/signals-core": "^1.2.3"
-  }
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.4.0"
+  },
+  "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a"
 }

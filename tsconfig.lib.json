@@ -4,7 +4,6 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "moduleResolution": "Node",
     "strict": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -15,6 +14,8 @@
     "noImplicitReturns": true,
     "skipLibCheck": true,
 
+    "ignoreDeprecations": "6.0",
+    
     "baseUrl": ".",
     "paths": {
       "$core": ["core/index"],
@@ -24,5 +25,5 @@
       "$utility/*": ["utility/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.d.ts"]
+  "include": ["**/*.d.ts"]
 }

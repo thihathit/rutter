@@ -48,7 +48,7 @@
     "format": "oxfmt"
   },
   "dependencies": {
-    "@preact/signals-core": "^1.2.3"
+    "@preact/signals-core": "^1.14.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.1",

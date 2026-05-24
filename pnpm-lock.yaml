@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@preact/signals-core':
-        specifier: ^1.2.3
+        specifier: ^1.14.2
         version: 1.14.2
     devDependencies:
       '@commitlint/cli':

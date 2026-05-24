@@ -1,18 +1,18 @@
-import { FC } from 'react'
+import { FC } from "react";
 
-import { on, redirect, useRoute } from './router'
+import { on, redirect, useRoute } from "./router";
 
 export const App: FC = () => {
-  const { is404, ...restStates } = useRoute()
+  const { is404, ...restStates } = useRoute();
 
   return (
     <>
       <nav>
-        <button onClick={() => redirect('index')}>Index</button>
+        <button onClick={() => redirect("index")}>Index</button>
 
-        <button onClick={() => redirect('about')}>About</button>
+        <button onClick={() => redirect("about")}>About</button>
 
-        <button onClick={() => redirect('blog')}>Blog</button>
+        <button onClick={() => redirect("blog")}>Blog</button>
 
         <a href="/invalid-url">
           <button>404</button>
@@ -27,20 +27,20 @@ export const App: FC = () => {
             <h1>404 Page</h1>
           ) : (
             <>
-              {on('index') && <h1>Index Page</h1>}
+              {on("index") && <h1>Index Page</h1>}
 
-              {on('about') && <h1>About Page</h1>}
+              {on("about") && <h1>About Page</h1>}
 
-              {on('blog') && (
+              {on("blog") && (
                 <>
                   <h1>Blog Page</h1>
 
                   <button
                     onClick={() =>
-                      redirect('blogDetail', {
+                      redirect("blogDetail", {
                         params: {
-                          id: 123
-                        }
+                          id: 123,
+                        },
                       })
                     }
                   >
@@ -49,7 +49,7 @@ export const App: FC = () => {
                 </>
               )}
 
-              {on('blogDetail') && <h1>Blog Detail Page</h1>}
+              {on("blogDetail") && <h1>Blog Detail Page</h1>}
             </>
           )}
         </div>
@@ -63,7 +63,7 @@ export const App: FC = () => {
         </code>
       </fieldset>
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

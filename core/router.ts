@@ -1,104 +1,95 @@
-import { Signal, signal, computed, effect } from '@preact/signals-core'
+import { Signal, signal, computed, effect } from "@preact/signals-core";
 
-import { mapValues, buildURL } from '$utility'
+import { mapValues, buildURL } from "$utility";
 
-import {
-  RouteName,
-  Data,
-  RedirectMode,
-  MainRedirectOptions,
-  MetaValue
-} from './types'
-import { trailingSlash } from './normalizers'
+import { RouteName, Data, RedirectMode, MainRedirectOptions, MetaValue } from "./types";
+import { trailingSlash } from "./normalizers";
 
 type Options<RN extends RouteName, FieldsMeta extends MetaValue> = {
   /** Register your routes here. */
-  routes: Data<RN, FieldsMeta>
+  routes: Data<RN, FieldsMeta>;
 
   /** Replace with ponyfill. */
-  URLPattern?: unknown
-}
+  URLPattern?: unknown;
+};
 
-const getCurrentURL = () => new URL(self.location.toString())
+const getCurrentURL = () => new URL(self.location.toString());
 
 export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
-  #Pattern = URLPattern
+  #Pattern = URLPattern;
 
-  #url = signal(getCurrentURL())
+  #url = signal(getCurrentURL());
 
   /** `Reactive` */
-  #routeData: Signal<Data<RN, FieldsMeta>>
+  #routeData: Signal<Data<RN, FieldsMeta>>;
 
   /** `Reactive` */
   #withPattern = computed(() =>
-    mapValues(
-      this.#routeData.value,
-      ({ pathname, hash, search, normalize = true, ...rest }) => {
-        const patternOptions = { hash, search, pathname }
+    mapValues(this.#routeData.value, ({ pathname, hash, search, normalize = true, ...rest }) => {
+      const patternOptions = { hash, search, pathname };
 
-        if (normalize) {
-          if (!trailingSlash.matchAny(pathname)) {
-            patternOptions.pathname = `${pathname}{/}?`
-          }
-        }
-
-        const pattern = new this.#Pattern(patternOptions)
-
-        return {
-          pattern,
-          normalize,
-          ...rest
+      if (normalize) {
+        if (!trailingSlash.matchAny(pathname)) {
+          patternOptions.pathname = `${pathname}{/}?`;
         }
       }
-    )
-  )
+
+      const pattern = new this.#Pattern(patternOptions);
+
+      return {
+        pattern,
+        normalize,
+        ...rest,
+      };
+    }),
+  );
 
   /** `Reactive` */
   #details = computed(() =>
-    mapValues(this.#withPattern.value, routeData => ({
+    mapValues(this.#withPattern.value, (routeData) => ({
       ...routeData,
 
       /** `Matched against current route` */
       isMatch: routeData.pattern.test(this.#url.value),
 
       /** `Matched against current route. In details` */
-      detail: routeData.pattern.exec(this.#url.value)
-    }))
-  )
+      detail: routeData.pattern.exec(this.#url.value),
+    })),
+  );
 
   /** `Reactive` */
   #current = computed(() => {
-    const details = this.#details.value
+    const details = this.#details.value;
 
-    const routeNames = Object.keys(details) as RN[]
+    const routeNames = Object.keys(details) as RN[];
 
     const route = routeNames
-      .map(name => ({
+      .map((name) => ({
         name,
-        route: details[name]
+        route: details[name],
       }))
       .filter(({ route }) => !route.ignore)
-      .find(({ route }) => route.isMatch)
+      .find(({ route }) => route.isMatch);
 
-    return route?.name
-  })
+    return route?.name;
+  });
 
   /** `Reactive` */
   #route = computed(() => {
-    const url = this.#url.value
-    const info = this.getCurrentDetail()
+    const url = this.#url.value;
+    const info = this.getCurrentDetail();
 
-    const detail = info?.detail
-    const name = info?.name
+    const detail = info?.detail;
+    const name = info?.name;
 
-    const is404 = info === undefined
+    const is404 = info === undefined;
     const params = {
-      ...detail?.pathname.groups
-    }
-    const hash = url.hash
+      ...detail?.pathname.groups,
+    };
+    const hash = url.hash;
 
-    const search = new URLSearchParams(url.search)
-    const queryParams = Object.fromEntries(search)
+    const search = new URLSearchParams(url.search);
+    const queryParams = Object.fromEntries(search);
 
     return {
       name,
@@ -106,9 +97,9 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
       params,
       queryParams,
       hash,
-      info
-    }
-  })
+      info,
+    };
+  });
 
   /** `Reactive` */
   #summary = computed(() => ({
@@ -117,84 +108,84 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
     withPattern: this.#withPattern.value,
     details: this.#details.value,
     route: this.#route.value,
-    current: this.#current.value
-  }))
+    current: this.#current.value,
+  }));
 
   /** Registered events. Invoked upon cleanup process */
-  #events: VoidFunction[] = []
+  #events: VoidFunction[] = [];
 
   /** Registered effects. Invoked upon cleanup process */
-  #watchers: VoidFunction[] = []
+  #watchers: VoidFunction[] = [];
 
   /** History API based router. */
   constructor({ routes, URLPattern }: Options<RN, FieldsMeta>) {
     // @ts-ignore
-    if (URLPattern) this.#Pattern = URLPattern
+    if (URLPattern) this.#Pattern = URLPattern;
 
-    this.#routeData = signal(routes)
+    this.#routeData = signal(routes);
 
-    this.#events.push(this.#autoUpdate())
+    this.#events.push(this.#autoUpdate());
   }
 
   #getWatcherCleaner = (watcher: VoidFunction) => {
     return () => {
-      watcher()
+      watcher();
 
-      this.#watchers = this.#watchers.filter(effect => effect !== watcher)
-    }
-  }
+      this.#watchers = this.#watchers.filter((effect) => effect !== watcher);
+    };
+  };
 
   /** Update upon URL change */
   #autoUpdate = () => {
     const action = () => {
-      this.update()
-    }
+      this.update();
+    };
 
-    self.addEventListener('popstate', action)
+    self.addEventListener("popstate", action);
 
     // Produce cleanup code
     return () => {
-      self.removeEventListener('popstate', action)
-    }
-  }
+      self.removeEventListener("popstate", action);
+    };
+  };
 
   /** Overall detail */
   get summaryState() {
-    return this.#summary.value
+    return this.#summary.value;
   }
 
   /** Current route detail */
   get routeState() {
-    return this.#route.value
+    return this.#route.value;
   }
 
   getDetail = (name: RN) => {
-    return this.#details.value[name]
-  }
+    return this.#details.value[name];
+  };
 
   getCurrentDetail = () => {
-    const name = this.#current.value
+    const name = this.#current.value;
 
-    if (!name) return
+    if (!name) return;
 
-    return { name, ...this.getDetail(name) }
-  }
+    return { name, ...this.getDetail(name) };
+  };
 
   /** Refresh route information */
   update = () => {
-    this.#url.value = getCurrentURL()
-  }
+    this.#url.value = getCurrentURL();
+  };
 
   /** Check current route name */
   on = (name: RN) => {
-    const currentRN = this.#current.value
+    const currentRN = this.#current.value;
 
-    if (!currentRN) return false
+    if (!currentRN) return false;
 
-    const { isMatch } = this.getDetail(currentRN)
+    const { isMatch } = this.getDetail(currentRN);
 
-    return isMatch && currentRN === name
-  }
+    return isMatch && currentRN === name;
+  };
 
   /**
    * Same as `on()` but accepts multiple route names.
@@ -202,10 +193,10 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
    * Returns `true` if one of them matches.
    */
   onOneOf = (names: RN[]) => {
-    const matches = names.map(name => this.on(name))
+    const matches = names.map((name) => this.on(name));
 
-    return !!matches.filter(Boolean).length
-  }
+    return !!matches.filter(Boolean).length;
+  };
 
   /**
    * Similar to `on()` except this only check for route pattern.
@@ -213,68 +204,66 @@ export class CreateHistory<RN extends RouteName, FieldsMeta = MetaValue> {
    * Whereas `on` consider options such as `ignore`.
    */
   onRouteMatch = (name: RN) => {
-    return this.getDetail(name).isMatch
-  }
+    return this.getDetail(name).isMatch;
+  };
 
   /** Jump between routes. */
   redirect = (name: RN, options: MainRedirectOptions = {}) => {
-    const { hash, params, queryParams } = this.#route.value
+    const { hash, params, queryParams } = this.#route.value;
 
     const { replace = false, ...rest } = (() => {
-      if (typeof options == 'function') {
+      if (typeof options == "function") {
         return options({
           hash,
           params,
-          queryParams
-        })
+          queryParams,
+        });
       }
 
-      return options
-    })()
+      return options;
+    })();
 
-    const { pattern } = this.getDetail(name)
+    const { pattern } = this.getDetail(name);
 
-    const URL = buildURL(pattern.pathname, rest)
+    const URL = buildURL(pattern.pathname, rest);
 
-    const method: RedirectMode = replace ? 'replaceState' : 'pushState'
+    const method: RedirectMode = replace ? "replaceState" : "pushState";
 
-    history[method](null, '', URL)
+    history[method](null, "", URL);
 
-    this.update()
-  }
+    this.update();
+  };
 
   /** Watch: `summaryState` */
   watchSummaryState = (
-    callback: (
-      summaryState: CreateHistory<RN, FieldsMeta>['summaryState']
-    ) => void
+    callback: (summaryState: CreateHistory<RN, FieldsMeta>["summaryState"]) => void,
   ) => {
-    const watcher = effect(() => callback(this.#summary.value))
+    const watcher = effect(() => callback(this.#summary.value));
 
-    this.#watchers.push(watcher)
+    this.#watchers.push(watcher);
 
-    return this.#getWatcherCleaner(watcher)
-  }
+    return this.#getWatcherCleaner(watcher);
+  };
 
   /** Watch: `routeState` */
   watchRouteState = (
-    callback: (routeState: CreateHistory<RN, FieldsMeta>['routeState']) => void
+    callback: (routeState: CreateHistory<RN, FieldsMeta>["routeState"]) => void,
   ) => {
-    const watcher = effect(() => callback(this.#route.value))
+    const watcher = effect(() => callback(this.#route.value));
 
-    this.#watchers.push(watcher)
+    this.#watchers.push(watcher);
 
-    return this.#getWatcherCleaner(watcher)
-  }
+    return this.#getWatcherCleaner(watcher);
+  };
 
   /** De-register events, watchers */
   destroy = () => {
-    this.#watchers.forEach(stop => stop())
-    this.#events.forEach(stop => stop())
+    this.#watchers.forEach((stop) => stop());
+    this.#events.forEach((stop) => stop());
 
-    this.#events = []
-    this.#watchers = []
-  }
+    this.#events = [];
+    this.#watchers = [];
+  };
 }
 
-export default CreateHistory
+export default CreateHistory;

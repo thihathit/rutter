@@ -14,27 +14,27 @@
 ### <img src="./docs/logos/javascript.svg" width="14"/> VanillaJS
 
 ```ts
-import { CreateHistory } from 'rutter'
+import { CreateHistory } from "rutter";
 
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: ''
+      pathname: "",
     },
     about: {
-      pathname: '/about'
+      pathname: "/about",
     },
     blog: {
-      pathname: '/blog'
+      pathname: "/blog",
     },
     blogDetail: {
-      pathname: '/blog/:id'
-    }
-  }
-})
+      pathname: "/blog/:id",
+    },
+  },
+});
 
-router.on('index') // boolean
-router.onOneOf(['index', 'about']) // boolean
+router.on("index"); // boolean
+router.onOneOf(["index", "about"]); // boolean
 ```
 
 ### <img src="./docs/logos/react.svg" width="14"/> React bindings: via `useState`/`context`
@@ -42,93 +42,80 @@ router.onOneOf(['index', 'about']) // boolean
 ```tsx
 // router.(tsx|jsx)
 
-import {
-  FC,
-  PropsWithChildren,
-  createContext,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import { FC, PropsWithChildren, createContext, useContext, useEffect, useState } from "react";
 
-import { CreateHistory } from 'rutter'
+import { CreateHistory } from "rutter";
 
-export const {
-  redirect,
-  on,
-  summaryState,
-  routeState,
-  watchSummaryState,
-  watchRouteState
-} = new CreateHistory({
-  routes: {
-    index: {
-      pathname: ''
+export const { redirect, on, summaryState, routeState, watchSummaryState, watchRouteState } =
+  new CreateHistory({
+    routes: {
+      index: {
+        pathname: "",
+      },
+      about: {
+        pathname: "/about",
+      },
+      blog: {
+        pathname: "/blog",
+      },
+      blogDetail: {
+        pathname: "/blog/:id",
+      },
     },
-    about: {
-      pathname: '/about'
-    },
-    blog: {
-      pathname: '/blog'
-    },
-    blogDetail: {
-      pathname: '/blog/:id'
-    }
-  }
-})
+  });
 
 /**
  * Although using with `context` is recommended for performance reason, you can directly use this hook if you don't want to store all the states in `context` tree.
  */
 export const useRouterValues = () => {
-  const [routeStateValue, setRouteStateState] = useState(routeState)
-  const [summaryStateValue, setSummaryStateState] = useState(summaryState)
+  const [routeStateValue, setRouteStateState] = useState(routeState);
+  const [summaryStateValue, setSummaryStateState] = useState(summaryState);
 
-  useEffect(() => watchRouteState(setRouteStateState), [])
-  useEffect(() => watchSummaryState(setSummaryStateState), [])
+  useEffect(() => watchRouteState(setRouteStateState), []);
+  useEffect(() => watchSummaryState(setSummaryStateState), []);
 
   return {
     routeState: routeStateValue,
-    summaryState: summaryStateValue
-  }
-}
+    summaryState: summaryStateValue,
+  };
+};
 
 const context = createContext({
   routeState,
-  summaryState
-})
+  summaryState,
+});
 
-const useRouterContext = () => useContext(context)
+const useRouterContext = () => useContext(context);
 
 export const RouterProvider: FC<PropsWithChildren> = ({ children }) => {
-  const value = useRouterValues()
+  const value = useRouterValues();
 
-  return <context.Provider value={value}>{children}</context.Provider>
-}
+  return <context.Provider value={value}>{children}</context.Provider>;
+};
 
 export const useRoute = () => {
-  const { routeState } = useRouterContext()
+  const { routeState } = useRouterContext();
 
-  return routeState
-}
+  return routeState;
+};
 ```
 
 ```tsx
 // app.(tsx|jsx)
 
-import { FC } from 'react'
+import { FC } from "react";
 
-import { on, redirect, useRoute, RouterProvider } from './router'
+import { on, redirect, useRoute, RouterProvider } from "./router";
 
 const Routing: FC = () => {
-  const { is404, ...restStates } = useRoute()
+  const { is404, ...restStates } = useRoute();
 
   return (
     <>
       <nav>
-        <button onClick={() => redirect('index')}>Index</button>
+        <button onClick={() => redirect("index")}>Index</button>
 
-        <button onClick={() => redirect('blog')}>Blog</button>
+        <button onClick={() => redirect("blog")}>Blog</button>
 
         <a href="/invalid-url">
           <button>404</button>
@@ -143,20 +130,20 @@ const Routing: FC = () => {
             <h1>404 Page</h1>
           ) : (
             <>
-              {on('index') && <h1>Index Page</h1>}
+              {on("index") && <h1>Index Page</h1>}
 
-              {on('about') && <h1>About Page</h1>}
+              {on("about") && <h1>About Page</h1>}
 
-              {on('blog') && (
+              {on("blog") && (
                 <>
                   <h1>Blog Page</h1>
 
                   <button
                     onClick={() =>
-                      redirect('blogDetail', {
+                      redirect("blogDetail", {
                         params: {
-                          id: 123
-                        }
+                          id: 123,
+                        },
                       })
                     }
                   >
@@ -165,7 +152,7 @@ const Routing: FC = () => {
                 </>
               )}
 
-              {on('blogDetail') && <h1>Blog Detail Page</h1>}
+              {on("blogDetail") && <h1>Blog Detail Page</h1>}
             </>
           )}
         </div>
@@ -179,14 +166,14 @@ const Routing: FC = () => {
         </code>
       </fieldset>
     </>
-  )
-}
+  );
+};
 
 const App: FC = () => (
   <RouterProvider>
     <Routing />
   </RouterProvider>
-)
+);
 ```
 
 ### <img src="./docs/logos/vue.svg" width="14"/> Vue bindings: via `shallowRef`/`computed`
@@ -194,27 +181,27 @@ const App: FC = () => (
 ```ts
 // router.(ts|js)
 
-import { computed, shallowRef } from 'vue'
-import { CreateHistory } from 'rutter'
+import { computed, shallowRef } from "vue";
+import { CreateHistory } from "rutter";
 
-import { mapValues } from 'lodash-es'
+import { mapValues } from "lodash-es";
 
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: ''
+      pathname: "",
     },
     about: {
-      pathname: '/about'
+      pathname: "/about",
     },
     blog: {
-      pathname: '/blog'
+      pathname: "/blog",
     },
     blogDetail: {
-      pathname: '/blog/:id'
-    }
-  }
-})
+      pathname: "/blog/:id",
+    },
+  },
+});
 
 const {
   //
@@ -222,37 +209,37 @@ const {
   routeState,
   watchSummaryState,
   watchRouteState,
-  on
-} = router
+  on,
+} = router;
 
-export const { redirect } = router
+export const { redirect } = router;
 
-export const routerState = shallowRef(summaryState)
-export const route = shallowRef(routeState)
+export const routerState = shallowRef(summaryState);
+export const route = shallowRef(routeState);
 
-export const is404 = computed(() => route.value.is404)
+export const is404 = computed(() => route.value.is404);
 
 export const matches = computed(() => {
-  const { details } = routerState.value
+  const { details } = routerState.value;
 
-  type RouteNames = keyof typeof details
+  type RouteNames = keyof typeof details;
 
-  return mapValues(details, (_, name) => on(name as RouteNames))
-})
+  return mapValues(details, (_, name) => on(name as RouteNames));
+});
 
-watchSummaryState(state => {
-  routerState.value = state
-})
+watchSummaryState((state) => {
+  routerState.value = state;
+});
 
-watchRouteState(state => {
-  route.value = state
-})
+watchRouteState((state) => {
+  route.value = state;
+});
 ```
 
 ```vue
 <script setup lang="ts">
 // app.vue
-import { redirect, route, matches, is404 } from './router'
+import { redirect, route, matches, is404 } from "./router";
 </script>
 
 <template>
@@ -279,9 +266,7 @@ import { redirect, route, matches, is404 } from './router'
         <template v-if="matches.blog">
           <h1>Blog Page</h1>
 
-          <button
-            @click="() => redirect('blogDetail', { params: { id: 123 } })"
-          >
+          <button @click="() => redirect('blogDetail', { params: { id: 123 } })">
             Blog Detail
           </button>
         </template>
@@ -306,38 +291,38 @@ import { redirect, route, matches, is404 } from './router'
 ```ts
 // router.(ts|js)
 
-import { readable, derived } from 'svelte/store'
-import { CreateHistory } from 'rutter'
+import { readable, derived } from "svelte/store";
+import { CreateHistory } from "rutter";
 
-import { mapValues } from 'lodash-es'
+import { mapValues } from "lodash-es";
 
 const router = new CreateHistory({
   routes: {
     index: {
-      pathname: ''
+      pathname: "",
     },
     about: {
-      pathname: '/about'
+      pathname: "/about",
     },
     blog: {
-      pathname: '/blog'
+      pathname: "/blog",
     },
     blogDetail: {
-      pathname: '/blog/:id'
-    }
-  }
-})
+      pathname: "/blog/:id",
+    },
+  },
+});
 
-const { summaryState, routeState, watchSummaryState, watchRouteState } = router
+const { summaryState, routeState, watchSummaryState, watchRouteState } = router;
 
-export const { redirect, on, onOneOf } = router
+export const { redirect, on, onOneOf } = router;
 
-export const route = readable(routeState, watchRouteState)
-export const routerState = readable(summaryState, watchSummaryState)
+export const route = readable(routeState, watchRouteState);
+export const routerState = readable(summaryState, watchSummaryState);
 
 export const matches = derived(routerState, ({ details }) =>
-  mapValues(details, (_, name) => on(name as keyof typeof details))
-)
+  mapValues(details, (_, name) => on(name as keyof typeof details)),
+);
 ```
 
 ```svelte

@@ -8,6 +8,10 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     outputs:
       has-new-release: ${{ steps.release.outputs.new_release_published }}
       tag-name: ${{ steps.release.outputs.new_release_git_tag }}
@@ -28,6 +32,8 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: release
     if: needs.release.outputs.has-new-release == 'true'
     steps:
